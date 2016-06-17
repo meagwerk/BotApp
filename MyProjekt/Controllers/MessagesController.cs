@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Http.Description;
 using Microsoft.Bot.Connector;
-
 using Newtonsoft.Json;
 using Microsoft.Bot.Builder.Dialogs;
 using System.Text;
@@ -25,8 +24,8 @@ namespace Bot_Application1
         private string frage3 = "Ihre Kenntnisse zur Geldanlage";
         private string frage4 = "Was sind Ihre Anlageziele? ";
         private string frage5 = "Ihre Einstellung zur Wertentwicklung?";
-        private string frage6 = "Die geplante Anlage entspricht ..." + Environment.NewLine + "(Einmalanlage oder Jahresvolumen bei regelm. Sparen)";
-        private string frage7 = "Die geplante Anlage beträgt ...  " + Environment.NewLine + "(Einmalanlage oder Jahresvolumen bei regelm. Sparen. Vermögen = Geld, Wertpapiere, Immobilien etc.abzüglich Kredite, Darlehen, Hypotheken etc.)";
+        private string frage6 = "Die geplante Anlage entspricht ..." + "\n\r" + "(Einmalanlage oder Jahresvolumen bei regelm. Sparen)";
+        private string frage7 = "Die geplante Anlage beträgt ...  " + "\n\r" + "(Einmalanlage oder Jahresvolumen bei regelm. Sparen. Vermögen = Geld, Wertpapiere, Immobilien etc.abzüglich Kredite, Darlehen, Hypotheken etc.)";
 
         private string antwort1 = "1.Durch regelmäßiges Sparen (ggf. zusätzliche Ersteinzahlung)" + "\n\r" + "2.Durch eine einmalige Zahlung (ohne Folgezahlungen)";
         private string antwort2 = "1.Ich habe noch nie Wertpapiere gekauft." + "\n\r" + "2.Ich habe bislang nur in festverzinsliche Wertpapiere oder Immobilienfonds investiert." + "\n\r" + "3.Ich habe auch schon in Aktien, Aktienfonds oder gemischte Fonds mit Aktienanteil investiert.";
@@ -75,7 +74,7 @@ namespace Bot_Application1
             int number;
             var message = await argument;
 
-            if (count == 11)
+            if (count == 14)
 
             {
                 this.count = 1;
@@ -89,8 +88,8 @@ namespace Bot_Application1
                 if (count == 1)
                 {
 
-                    await context.PostAsync(string.Format("Hallo. Ich bin RoboadvisoryBot und versuche Ihnen helfen, richtige Fonds zu wählen."));
-                    await context.PostAsync(string.Format("{1}", this.count++, "Nach der Fragestellung bekommen Sie Auswahl von Antworte. Wählen Sie bitte richtige Antwort und geben Sie bitte entsprechende Zahl ein." + "\n\r" + "Haben Sie verstanden?" + "\n\r" + "Antworten Sie bitte mit 'Ja' oder 'Nein'"));
+                  //  await context.PostAsync(string.Format("Hallo. Ich bin RoboadvisoryBot und versuche Ihnen helfen, richtige Fonds zu wählen."));
+                    await context.PostAsync(string.Format("{1}", this.count++, "Hallo.Ich bin RoboadvisoryBot und versuche Ihnen helfen, richtige Fonds zu wählen."+"\n\r"+"Nach der Fragestellung bekommen Sie Auswahl von Antworte. Wählen Sie bitte richtige Antwort und geben Sie bitte entsprechende Zahl ein." + "\n\r" + "Haben Sie verstanden?" + "\n\r" + "Antworten Sie bitte mit 'Ja' oder 'Nein'"));
                     context.Wait(MessageReceivedAsync);
                 }
 
@@ -98,8 +97,8 @@ namespace Bot_Application1
                 {
 
 
-                    await context.PostAsync(string.Format("Gut, jetzt können wir anfangen"));
-                    await context.PostAsync(string.Format(frage1));
+                    await context.PostAsync(string.Format("Gut, jetzt können wir anfangen" + "\n\r"+ frage1));
+                    //await context.PostAsync(string.Format(frage1));
                     await context.PostAsync(string.Format("{1}", this.count++, antwort1));
                     context.Wait(MessageReceivedAsync);
 
@@ -112,7 +111,7 @@ namespace Bot_Application1
                     context.Wait(MessageReceivedAsync);
 
                 }
-                else if (Int32.TryParse(message.Text, out number) || count == 10)
+                else if (Int32.TryParse(message.Text, out number) || this.count == 10)
                 {
 
                     switch (count)
@@ -182,7 +181,7 @@ namespace Bot_Application1
                         case 6:
                             if (tempAntwort[2].Length >= Int32.Parse(message.Text) && Int32.Parse(message.Text) > 0)
                             {
-                                await context.PostAsync(tempAntwort[2].Length.ToString());
+                               // await context.PostAsync(tempAntwort[2].Length.ToString());
 
                                 alleAnworte[3] = tempAntwort[2][int.Parse(message.Text) - 1];
                                 await context.PostAsync(string.Format(frage5));
@@ -216,7 +215,8 @@ namespace Bot_Application1
                             {
                                 alleAnworte[5] = tempAntwort[4][int.Parse(message.Text) - 1];
                                 await context.PostAsync(string.Format(frage7));
-                                await context.PostAsync(string.Format("{1}", this.count = 9, antwort7));
+                                await context.PostAsync(string.Format("{1}", this.count ++, antwort7));
+                                context.Wait(MessageReceivedAsync);
                             }
                             else
                             {
@@ -230,9 +230,10 @@ namespace Bot_Application1
                             {
                                 alleAnworte[6] = tempAntwort[5][int.Parse(message.Text) - 1];
                                 await context.PostAsync("Danke für Ihre Interesse an unsere Umfrage");
-                                await context.PostAsync("Ihre Fonds der Anlagestrategie ist -" + '"' + passendeFond(fonds, alleAnworte) + '"');
-                                await context.PostAsync("Wenn Sie weitere Interesse haben, kann ich Ihnen Link mit mehr Info über Foms schicken. 'Ja' oder 'Nein'");
-                                count++;
+                                await context.PostAsync(string.Format("{1}", this.count++, "Ihre Fonds der Anlagestrategie ist -" + '"' + passendeFond(fonds, alleAnworte) + '"' + "\n\r"+ "Wenn Sie weitere Interesse haben, kann ich Ihnen Link mit mehr Info über Foms schicken. 'Ja' oder 'Nein'"+count));
+                                //await context.PostAsync(string.Format("{1}",count));
+                                context.Wait(MessageReceivedAsync);
+                                
                             }
                             else
 
@@ -247,12 +248,12 @@ namespace Bot_Application1
                                 {
 
 
-                                    await context.PostAsync(string.Format("Danke für Ihre Interesse" + "\n\r" + "http://dems803680.eu.munichre.com/anlegeranalyse/wwwwebs/prod/anlegeranalyse/anlegeranalyse.html"));
-                                    count++;
+                                    await context.PostAsync(string.Format("{1}",this.count++,"Danke für Ihre Interesse" + "\n\r" + "http://dems803680.eu.munichre.com/anlegeranalyse/wwwwebs/prod/anlegeranalyse/anlegeranalyse.html"));
+                                    
                                 }
                                 else
                                 {
-                                    await context.PostAsync(string.Format("Ok, danke für Ihre Aufmerksamkeit"));
+                                    await context.PostAsync(string.Format("{1}",this.count++,"Ok, danke für Ihre Aufmerksamkeit"));
                                     count++;
                                 }
 
